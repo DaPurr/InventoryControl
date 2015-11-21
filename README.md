@@ -1,0 +1,2 @@
+# InventoryControl
+This project uses Discrete Event Simulation (DES) and theoretical order policies to do inventory control. First, the service levels of the current policy are evaluated and set as target levels for the theoretical model. Second, the simulation is ran again to evaluate the performance of the theoretical service levels. If the performance does not match, the theoretical service levels are adjusted. This procedure is repeated until comparable performance is acquired. The costs are then compared to see how well the new policy does. 
