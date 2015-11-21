@@ -1,3 +1,5 @@
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The PolicyCreator interface is used for classes which create certain policies for a material.
@@ -16,6 +18,8 @@ public interface PolicyCreator {
 	 * @return
 	 */
 	public ReorderPolicy createPolicyCSL(int[] demand, double leadTime, double target);
+	
+	public Set<Material> createPolicyCSL(Set<Material> materials, Map<String, Double> mapTargetCSL);
 	
 	/**
 	 * Creates a certain policy for a material given its demand, lead-time, and cycle service level.

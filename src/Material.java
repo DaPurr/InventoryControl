@@ -12,8 +12,6 @@ public class Material {
 	double price;
 	int current_stock;
 	int stock;
-	int min_stock;
-	int max_stock;
 	int lead_time;
 	int crit_H;
 	int crit_M;
@@ -42,8 +40,6 @@ public class Material {
 			int crit_H, int crit_M, int crit_L, int[] demand, String demandClass, String priceClass) {
 		this.id = id;
 		this.price = price;
-		this.min_stock = min_stock;
-		this.max_stock = max_stock;
 		this.lead_time = lead_time;
 		this.crit_H = crit_H;
 		this.crit_M = crit_M;
@@ -67,6 +63,23 @@ public class Material {
 		this.demand = demand;
 		this.demandClass = demandClass;
 		this.priceClass = priceClass;
+	}
+	
+	public Material(Material m, ReorderPolicy policy) {
+		this.id = m.getId();
+		this.price = m.getPrice();
+		this.lead_time = m.getLeadTime();
+		this.crit_H = m.getCritH();
+		this.crit_M = m.getCritM();
+		this.crit_L = m.getCritL();
+		this.demand = m.getDemand();
+		this.demandClass = m.getDemandClass();
+		this.priceClass = m.getPriceClass();
+		this.policy = policy;
+	}
+	
+	public int[] getDemand() {
+		return demand;
 	}
 	
 	public String getDemandClass() {

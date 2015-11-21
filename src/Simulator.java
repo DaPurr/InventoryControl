@@ -21,7 +21,6 @@ import java.util.TreeSet;
 public class Simulator {
 	
 	// class variables
-	private String file_name;
 	private Set<Material> materials;
 	private Scheduler scheduler;
 	private int horizon;
@@ -74,7 +73,6 @@ public class Simulator {
 	 */
 	public Simulator(String file_name) {
 		// initialize all class variables
-		this.file_name = file_name;
 		scheduler = new Scheduler();
 		system_state = new HashMap<>();
 		
@@ -92,7 +90,7 @@ public class Simulator {
 		combinedGroups = new TreeSet<>();
 		
 		try {
-			materials = importMaterials();
+			materials = importMaterials(file_name);
 			perf = new Performance(materials);
 			for (Material m : materials) {
 				system_state.put(m, 0.0);
@@ -103,6 +101,41 @@ public class Simulator {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public Simulator(Set<Material> materials) {
+		// initialize all class variables
+//				this.file_name = file_name;
+		this.materials = materials;
+		scheduler = new Scheduler();
+		system_state = new HashMap<>();
+
+		CSLDemandGroup = new TreeMap<>();
+		CSLPriceGroup = new TreeMap<>();
+		CSLCritGroup = new TreeMap<>();
+		CSLCombinedGroup = new TreeMap<>();
+		fillRateDemandGroup = new TreeMap<>();
+		fillRatePriceGroup = new TreeMap<>();
+		fillRateCritGroup = new TreeMap<>();
+		fillRateCombinedGroup = new TreeMap<>();
+		demandGroups = new TreeSet<>();
+		priceGroups = new TreeSet<>();
+		critGroups = new TreeSet<>();
+		combinedGroups = new TreeSet<>();
+		
+		perf = new Performance(materials);
+		boolean first = true;
+		for (Material m : materials) {
+			if (first) {
+				horizon = m.getDemand().length;
+				first = false;
+			}
+			system_state.put(m, 0.0);
+			priceGroups.add(m.getPriceClass());
+			demandGroups.add(m.getDemandClass());
+			critGroups.add(m.criticality());
+			combinedGroups.add(m.getCombinedClass());
 		}
 	}
 	
@@ -439,8 +472,8 @@ public class Simulator {
 		}
 		
 		// check if all materials are accounted for in combined class
-		for (String k : groupSizesCombined.keySet())
-			System.out.println(k + ": " + groupSizesCombined.get(k));
+//		for (String k : groupSizesCombined.keySet())
+//			System.out.println(k + ": " + groupSizesCombined.get(k));
 	}
 	
 	private void startup() {
@@ -456,9 +489,9 @@ public class Simulator {
 		}
 	}
 	
-	public void exportServiceMeasures() throws IOException {
+	public void exportServiceMeasures(String prefix) throws IOException {
 		// fill rate
-		BufferedWriter bw = new BufferedWriter(new FileWriter("fill_rates.csv"));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(prefix + "_fill_rates.csv"));
 		for (Material m : materials) {
 			bw.write(m.getId() + "," + perf.fillRate(m));
 			bw.newLine();
@@ -467,7 +500,7 @@ public class Simulator {
 		bw.close();
 		
 		// CSL
-		bw = new BufferedWriter(new FileWriter("CSL.csv"));
+		bw = new BufferedWriter(new FileWriter(prefix + "_CSL.csv"));
 		for (Material m : materials) {
 			bw.write(m.getId() + "," + perf.CSL(m));
 			bw.newLine();
@@ -476,7 +509,7 @@ public class Simulator {
 		bw.close();
 		
 		// Combined group - results
-		bw = new BufferedWriter(new FileWriter("combined_class.csv"));
+		bw = new BufferedWriter(new FileWriter(prefix + "_combined_class.csv"));
 //		String s = "Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs\n";
 		bw.write("Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs,Counts");
 		bw.newLine();
@@ -500,24 +533,23 @@ public class Simulator {
 		}
 		bw.flush();
 		bw.close();
+		
+		// write summary
+		bw = new BufferedWriter(new FileWriter(prefix + "_summary.txt"));
+		bw.write(summary());
+		bw.flush();
+		bw.close();
 	}
 	
-	private Set<Material> importMaterials() throws IOException {
+	public Set<Material> importMaterials(String file_name) throws IOException {
 		Set<Material> imported = new HashSet<>();
 		BufferedReader br = new BufferedReader(new FileReader(file_name));
 		String line = br.readLine();
-		PolicyCreator pc = new NormalPolicyS();
 		boolean first = true;
 		while (line != null) {
 			String[] part = line.split(",");
 			
-			// check if we can skip this item
-			String demandClass = part[67];
-//			if (demandClass.equals("-1")) {
-//				line = br.readLine();
-//				continue;
-//			}
-			
+			String demandClass = part[67];			
 			String id = part[0];
 			int lead_time = Integer.parseInt(part[1]);
 			int min_stock = Integer.parseInt(part[2]);
@@ -528,8 +560,6 @@ public class Simulator {
 			int crit_M = Integer.parseInt(part[7]);
 			int crit_L = Integer.parseInt(part[8]);
 			String priceClass = part[66];
-//			String critClassC = part[68];
-//			String itemClass = itemClassA + itemClassB + itemClassC;
 			
 			
 			// historical demand
@@ -545,8 +575,7 @@ public class Simulator {
 			}
 			
 			// estimate policy
-			ReorderPolicy policy = pc.createPolicyCSL(demand, Math.ceil((double)lead_time/30), 0.95);
-			Material m = new Material(id, price, policy, lead_time, 
+			Material m = new Material(id, price, min_stock, max_stock, lead_time, 
 					crit_H, crit_M, crit_L, demand, demandClass, priceClass);
 			imported.add(m);
 			
@@ -555,6 +584,42 @@ public class Simulator {
 		br.close();
 		
 		return imported;
+	}
+	
+	public Map<String, Double> getRealizedCSLCombined() {
+		return CSLCombinedGroup;
+	}
+	
+	public Map<String, Double> getRealizedFRCombined() {
+		return fillRateCombinedGroup;
+	}
+	
+	public Set<Material> getMaterials() {
+		return materials;
+	}
+	
+	public double totalHoldingCosts() {
+		double costs = 0.0;
+		for (String group : combinedGroups) {
+			costs += perf.getCombinedGroupHoldingCosts(group);
+		}
+		return costs;
+	}
+	
+	public double totalFixedCosts() {
+		double costs = 0.0;
+		for (String group : combinedGroups) {
+			costs += perf.getCombinedGroupFixedCosts(group);
+		}
+		return costs;
+	}
+	
+	public double totalMarginalCosts() {
+		double costs = 0.0;
+		for (String group : combinedGroups) {
+			costs += perf.getCombinedGroupMarginalCosts(group);
+		}
+		return costs;
 	}
 	
 }

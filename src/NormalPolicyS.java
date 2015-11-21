@@ -1,9 +1,28 @@
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 public class NormalPolicyS implements PolicyCreator {
 
 	public NormalPolicyS() {
-		// TODO Auto-generated constructor stub
+		// nothing to initialize
+	}
+	
+	@Override
+	public Set<Material> createPolicyCSL(Set<Material> materials, Map<String, Double> mapTargetCSL) {
+		Set<Material> normalMaterials = new HashSet<>();
+		PolicyCreator pc = new NormalPolicyS();
+		
+		for (Material m : materials) {
+			// estimate policy
+			ReorderPolicy policy = pc.createPolicyCSL(m.getDemand(), m.getLeadTime(), mapTargetCSL.get(m.getCombinedClass()));
+			Material material = new Material(m, policy);
+			normalMaterials.add(material);
+		}
+		
+		return normalMaterials;
 	}
 	
 	@Override

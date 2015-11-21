@@ -111,11 +111,6 @@ public class Performance {
 		countCycles.put(m, countCycles.get(m) + 1);
 	}
 	
-	public void endCycle(Material m, Cycle c) {
-//		isCycle.remove(m);
-//		stockout.remove(m);
-	}
-	
 	public void stockout(Material m) {
 		countStockouts.put(m, countStockouts.get(m) + 1);
 	}
