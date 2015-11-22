@@ -373,7 +373,7 @@ public class Simulator {
 		
 		// CSL
 //		if (consumption > m.getInventoryPosition() && !stockout.contains(m)) {
-		if (consumption >= m.getInventoryPosition()) {
+		if (consumption >= m.getInventoryLevel() && m.getInventoryLevel() > 0) {
 			// we just stocked out, so process it
 //			stockouts.put(m, stockouts.get(m) + 1);
 			perf.stockout(m);
