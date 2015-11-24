@@ -155,15 +155,15 @@ public class Simulator {
 			Event next_event = scheduler.nextEvent();
 			
 			// TODO: ONLY FOR DEBUGGING PURPOSES
-//			Material m = next_event.associatedMaterial();
-//			int deniedDemand = perf.deniedDemand.get(m);
-//			int totalDemand = perf.totalDemand.get(m);
-//			int nrStockouts = perf.countStockouts.get(m);
-//			int nrCycles = perf.countCycles.get(m);
-//			double FR = perf.fillRate(m);
-//			double CSL = perf.CSL(m);
-//			int IL = m.getInventoryLevel();
-//			int IP = m.getInventoryPosition();
+			Material m = next_event.associatedMaterial();
+			int deniedDemand = perf.deniedDemand.get(m);
+			int totalDemand = perf.totalDemand.get(m);
+			int nrStockouts = perf.countStockouts.get(m);
+			int nrCycles = perf.countCycles.get(m);
+			double FR = perf.fillRate(m);
+			double CSL = perf.CSL(m);
+			int IL = m.getInventoryLevel();
+			int IP = m.getInventoryPosition();
 			
 			// handle a consumption event
 			if (next_event instanceof ConsumptionEvent) {
@@ -178,17 +178,17 @@ public class Simulator {
 			}
 			
 			// TODO: DEBUGGING PURPOSES ONLY
-//			deniedDemand = perf.deniedDemand.get(m);
-//			totalDemand = perf.totalDemand.get(m);
-//			nrStockouts = perf.countStockouts.get(m);
-//			nrCycles = perf.countCycles.get(m);
-//			FR = perf.fillRate(m);
-//			CSL = perf.CSL(m);
-//			IL = m.getInventoryLevel();
-//			IP = m.getInventoryPosition();
+			deniedDemand = perf.deniedDemand.get(m);
+			totalDemand = perf.totalDemand.get(m);
+			nrStockouts = perf.countStockouts.get(m);
+			nrCycles = perf.countCycles.get(m);
+			FR = perf.fillRate(m);
+			CSL = perf.CSL(m);
+			IL = m.getInventoryLevel();
+			IP = m.getInventoryPosition();
 			
 			// update holding costs
-			Material m = next_event.associatedMaterial();
+//			Material m = next_event.associatedMaterial();
 			double prev_time_m = system_state.get(m);
 			double hold_costs = holding_costs*Math.max(0, m.getInventoryLevel())*
 					(scheduler.time() - prev_time_m)*m.getPrice();
@@ -385,7 +385,7 @@ public class Simulator {
 		
 		// if stock falls below minimum allowed stock, we schedule reorder event
 		if (m.doReorder()) {
-			int lead_time = detLeadTime(m.getLeadTime());
+			int lead_time = (int)Math.ceil(m.getLeadTime());
 			int quantity = m.reorder();
 			scheduler.addReorderEvent(m, quantity, scheduler.time() + lead_time);
 			// new cycle started
@@ -403,9 +403,9 @@ public class Simulator {
 		}
 	}
 	
-	private int detLeadTime(int lead_time) {
-		return (int)Math.ceil((double)lead_time/(double)30);
-	}
+//	private int detLeadTime(int lead_time) {
+//		return (int)Math.ceil((double)lead_time/(double)30);
+//	}
 	
 	private void calculateServiceMeasures() {		
 		// init variables
@@ -546,12 +546,13 @@ public class Simulator {
 		BufferedReader br = new BufferedReader(new FileReader(file_name));
 		String line = br.readLine();
 		boolean first = true;
+		int monthSize = 30;
 		while (line != null) {
 			String[] part = line.split(",");
 			
 			String demandClass = part[67];			
 			String id = part[0];
-			int lead_time = Integer.parseInt(part[1]);
+			int lead_time = Integer.parseInt(part[1])/monthSize;
 			int min_stock = Integer.parseInt(part[2]);
 			int max_stock = Integer.parseInt(part[3]);
 //			int current_stock = Integer.parseInt(part[4]);
