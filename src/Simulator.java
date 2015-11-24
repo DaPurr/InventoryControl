@@ -47,6 +47,7 @@ public class Simulator {
 	
 	// system state - auxiliary variable for determining holding and backorder costs
 	private Map<Material, Double> system_state;
+	private Set<Material> currentStockouts = new HashSet<>();
 	
 	// service measures
 	// fill rate
@@ -373,10 +374,11 @@ public class Simulator {
 		
 		// CSL
 //		if (consumption > m.getInventoryPosition() && !stockout.contains(m)) {
-		if (consumption >= m.getInventoryLevel() && m.getInventoryLevel() > 0) {
+		if (consumption >= m.getInventoryLevel() && m.getInventoryLevel() > 0 && !currentStockouts.contains(m)) {
 			// we just stocked out, so process it
 //			stockouts.put(m, stockouts.get(m) + 1);
 			perf.stockout(m);
+			currentStockouts.add(m);
 //			stockout.add(m);
 		}
 		
@@ -390,6 +392,7 @@ public class Simulator {
 			scheduler.addReorderEvent(m, quantity, scheduler.time() + lead_time);
 			// new cycle started
 			perf.startCycle(m);
+			currentStockouts.remove(m);
 			
 			// update inventory position
 			m.replenishInventoryPosition(quantity);
