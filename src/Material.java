@@ -196,4 +196,21 @@ public class Material {
 		return "4";
 	}
 	
+	public int totalDemand() {
+		int sum = 0;
+		for (int i = 0; i < demand.length; i++)
+			sum += demand[i];
+		return sum;
+	}
+	
+	public int totalPositiveDemand() {
+		int sum = 0;
+		for (int i = 0; i < demand.length; i++) {
+			if (demand[i] <= 0)
+				continue;
+			sum += demand[i];
+		}
+		return sum;
+	}
+	
 }

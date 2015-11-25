@@ -433,28 +433,37 @@ public class Simulator {
 			CSLCombinedGroup.put(group, 0.0);
 		}
 		
-		// determine sum of all service levels
+		// determine total group weight
 		for (Material m : materials) {
 			String demandGroup = m.getDemandClass();
 			String priceGroup = m.getPriceClass();
 			String critGroup = m.criticality();
 			String combinedGroup = m.getCombinedClass();
 			
-			groupSizesDemand.put(demandGroup, groupSizesDemand.get(demandGroup) + 1);
-			CSLDemandGroup.put(demandGroup, CSLDemandGroup.get(demandGroup) + perf.CSL(m));
-			fillRateDemandGroup.put(demandGroup, fillRateDemandGroup.get(demandGroup) + perf.fillRate(m));
+			groupSizesDemand.put(demandGroup, groupSizesDemand.get(demandGroup) + m.totalPositiveDemand());
+			groupSizesPrice.put(priceGroup, groupSizesPrice.get(priceGroup) + m.totalPositiveDemand());
+			groupSizesCrit.put(critGroup, groupSizesCrit.get(critGroup) + m.totalPositiveDemand());
+			groupSizesCombined.put(combinedGroup, groupSizesCombined.get(combinedGroup) + m.totalPositiveDemand());
+		}
+		
+		// determine weighted sum of all service levels
+		for (Material m : materials) {
+			String demandGroup = m.getDemandClass();
+			String priceGroup = m.getPriceClass();
+			String critGroup = m.criticality();
+			String combinedGroup = m.getCombinedClass();
 			
-			groupSizesPrice.put(priceGroup, groupSizesPrice.get(priceGroup) + 1);
-			CSLPriceGroup.put(priceGroup, CSLPriceGroup.get(priceGroup) + perf.CSL(m));
-			fillRatePriceGroup.put(priceGroup, fillRatePriceGroup.get(priceGroup) + perf.fillRate(m));
+			CSLDemandGroup.put(demandGroup, CSLDemandGroup.get(demandGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRateDemandGroup.put(demandGroup, fillRateDemandGroup.get(demandGroup) + perf.fillRate(m)*m.totalPositiveDemand());
 			
-			groupSizesCrit.put(critGroup, groupSizesCrit.get(critGroup) + 1);
-			CSLCritGroup.put(critGroup, CSLCritGroup.get(critGroup) + perf.CSL(m));
-			fillRateCritGroup.put(critGroup, fillRateCritGroup.get(critGroup) + perf.fillRate(m));
+			CSLPriceGroup.put(priceGroup, CSLPriceGroup.get(priceGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRatePriceGroup.put(priceGroup, fillRatePriceGroup.get(priceGroup) + perf.fillRate(m)*m.totalPositiveDemand());
 			
-			groupSizesCombined.put(combinedGroup, groupSizesCombined.get(combinedGroup) + 1);
-			CSLCombinedGroup.put(combinedGroup, CSLCombinedGroup.get(combinedGroup) + perf.CSL(m));
-			fillRateCombinedGroup.put(combinedGroup, fillRateCombinedGroup.get(combinedGroup) + perf.fillRate(m));
+			CSLCritGroup.put(critGroup, CSLCritGroup.get(critGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRateCritGroup.put(critGroup, fillRateCritGroup.get(critGroup) + perf.fillRate(m)*m.totalPositiveDemand());
+			
+			CSLCombinedGroup.put(combinedGroup, CSLCombinedGroup.get(combinedGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRateCombinedGroup.put(combinedGroup, fillRateCombinedGroup.get(combinedGroup) + perf.fillRate(m)*m.totalPositiveDemand());
 		}
 		// divide by group size to determine average service levels per group
 		for (String group : demandGroups) {
