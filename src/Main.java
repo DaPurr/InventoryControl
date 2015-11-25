@@ -51,9 +51,9 @@ public class Main {
 		
 		// stopping criteria
 		// step size criterion
-		double epsilon = 1e-3;
+		double epsilon = 1e-4;
 		// max iterations
-		int n_max = 1000;
+		int n_max = 300;
 		// neighborhood criterion
 		double neighborhood = 0.02;
 		
@@ -103,7 +103,7 @@ public class Main {
 					stopping_criteria.put(group, true);
 			}
 			
-			// update rCSl and rFR using simulation
+			// update rCSL and rFR using simulation
 			Set<Material> newMaterials = pc.createPolicyCSL(materials, newTargetCSL);
 			sim = new Simulator(newMaterials);
 			sim.simulate();
