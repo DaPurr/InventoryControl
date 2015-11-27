@@ -6,7 +6,7 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
+		Simulator simCurrent = new Simulator("EOQ_policy.csv");
 		
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -15,10 +15,10 @@ public class Main {
 		Set<Material> currentMaterials = simCurrent.getMaterials();
 		
 		// simulate using Normal policies
-		NormalPolicyS normpcS = new NormalPolicyS();
-		Set<Material> normalMaterials = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simNormal = new Simulator(normalMaterials);
-		System.out.println(simNormal.simulate());
+//		NormalPolicyS normpcS = new NormalPolicyS();
+//		Set<Material> normalMaterials = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simNormal = new Simulator(normalMaterials);
+//		System.out.println(simNormal.simulate());
 		
 		// only do Poisson for some
 //		PoissonPolicyS poisspcS = new PoissonPolicyS();
@@ -26,15 +26,15 @@ public class Main {
 //		Simulator simPoisson= new Simulator(poissonMaterials);
 //		System.out.println(simPoisson.simulate());
 		
-		Simulator harmonizedNormalSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedNormalSim.simulate());
+//		Simulator harmonizedNormalSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedNormalSim.simulate());
 		
 		// export service measures
 		try {
 			simCurrent.exportServiceMeasures("current");
-			simNormal.exportServiceMeasures("normal");
+//			simNormal.exportServiceMeasures("normal");
 //			simPoisson.exportServiceMeasures("poisson");
-			harmonizedNormalSim.exportServiceMeasures("harm_normal");
+//			harmonizedNormalSim.exportServiceMeasures("harm_normal");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
