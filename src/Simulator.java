@@ -63,10 +63,15 @@ public class Simulator {
 	private Map<String, Double> CSLCritGroup;
 	private Map<String, Double> CSLCombinedGroup;
 	
-	Map<String, Integer> groupSizesDemand = new TreeMap<>();
-	Map<String, Integer> groupSizesPrice = new TreeMap<>();
-	Map<String, Integer> groupSizesCrit = new TreeMap<>();
-	Map<String, Integer> groupSizesCombined = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandDemand = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandPrice = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandCrit = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandCombined = new TreeMap<>();
+	
+	Map<String, Integer> groupSizeDemand = new TreeMap<>();
+	Map<String, Integer> groupSizePrice = new TreeMap<>();
+	Map<String, Integer> groupSizeCrit = new TreeMap<>();
+	Map<String, Integer> groupSizeCombined = new TreeMap<>();
 	
 	/**
 	 * Creates a Simulator class based of the data in file_name.
@@ -413,24 +418,41 @@ public class Simulator {
 	private void calculateServiceMeasures() {		
 		// init variables
 		for (String group : demandGroups) {
-			groupSizesDemand.put(group, 0);
+			groupTotalDemandDemand.put(group, 0);
 			fillRateDemandGroup.put(group, 0.0);
 			CSLDemandGroup.put(group, 0.0);
+			groupSizeDemand.put(group, 0);
 		}
 		for (String group : priceGroups) {
-			groupSizesPrice.put(group, 0);
+			groupTotalDemandPrice.put(group, 0);
 			fillRatePriceGroup.put(group, 0.0);
 			CSLPriceGroup.put(group, 0.0);
+			groupSizePrice.put(group, 0);
 		}
 		for (String group : critGroups) {
-			groupSizesCrit.put(group, 0);
+			groupTotalDemandCrit.put(group, 0);
 			fillRateCritGroup.put(group, 0.0);
 			CSLCritGroup.put(group, 0.0);
+			groupSizeCrit.put(group, 0);
 		}
 		for (String group : combinedGroups) {
-			groupSizesCombined.put(group, 0);
+			groupTotalDemandCombined.put(group, 0);
 			fillRateCombinedGroup.put(group, 0.0);
 			CSLCombinedGroup.put(group, 0.0);
+			groupSizeCombined.put(group, 0);
+		}
+		
+		// group counts
+		for (Material m : materials) {
+			String demandGroup = m.getDemandClass();
+			String priceGroup = m.getPriceClass();
+			String critGroup = m.criticality();
+			String combinedGroup = m.getCombinedClass();
+			
+			groupSizeDemand.put(demandGroup, groupSizeDemand.get(demandGroup) + 1);
+			groupSizePrice.put(priceGroup, groupSizePrice.get(priceGroup) + 1);
+			groupSizeCrit.put(critGroup, groupSizeCrit.get(critGroup) + 1);
+			groupSizeCombined.put(combinedGroup, groupSizeCombined.get(combinedGroup) + 1);
 		}
 		
 		// determine total group weight
@@ -440,10 +462,10 @@ public class Simulator {
 			String critGroup = m.criticality();
 			String combinedGroup = m.getCombinedClass();
 			
-			groupSizesDemand.put(demandGroup, groupSizesDemand.get(demandGroup) + m.totalPositiveDemand());
-			groupSizesPrice.put(priceGroup, groupSizesPrice.get(priceGroup) + m.totalPositiveDemand());
-			groupSizesCrit.put(critGroup, groupSizesCrit.get(critGroup) + m.totalPositiveDemand());
-			groupSizesCombined.put(combinedGroup, groupSizesCombined.get(combinedGroup) + m.totalPositiveDemand());
+			groupTotalDemandDemand.put(demandGroup, groupTotalDemandDemand.get(demandGroup) + m.totalPositiveDemand());
+			groupTotalDemandPrice.put(priceGroup, groupTotalDemandPrice.get(priceGroup) + m.totalPositiveDemand());
+			groupTotalDemandCrit.put(critGroup, groupTotalDemandCrit.get(critGroup) + m.totalPositiveDemand());
+			groupTotalDemandCombined.put(combinedGroup, groupTotalDemandCombined.get(combinedGroup) + m.totalPositiveDemand());
 		}
 		
 		// determine weighted sum of all service levels
@@ -467,20 +489,20 @@ public class Simulator {
 		}
 		// divide by group size to determine average service levels per group
 		for (String group : demandGroups) {
-			CSLDemandGroup.put(group, CSLDemandGroup.get(group) / groupSizesDemand.get(group));
-			fillRateDemandGroup.put(group, fillRateDemandGroup.get(group) / groupSizesDemand.get(group));
+			CSLDemandGroup.put(group, CSLDemandGroup.get(group) / groupTotalDemandDemand.get(group));
+			fillRateDemandGroup.put(group, fillRateDemandGroup.get(group) / groupTotalDemandDemand.get(group));
 		}
 		for (String group : priceGroups) {
-			CSLPriceGroup.put(group, CSLPriceGroup.get(group) / groupSizesPrice.get(group));
-			fillRatePriceGroup.put(group, fillRatePriceGroup.get(group) / groupSizesPrice.get(group));
+			CSLPriceGroup.put(group, CSLPriceGroup.get(group) / groupTotalDemandPrice.get(group));
+			fillRatePriceGroup.put(group, fillRatePriceGroup.get(group) / groupTotalDemandPrice.get(group));
 		}
 		for (String group : critGroups) {
-			CSLCritGroup.put(group, CSLCritGroup.get(group) / groupSizesCrit.get(group));
-			fillRateCritGroup.put(group, fillRateCritGroup.get(group) / groupSizesCrit.get(group));
+			CSLCritGroup.put(group, CSLCritGroup.get(group) / groupTotalDemandCrit.get(group));
+			fillRateCritGroup.put(group, fillRateCritGroup.get(group) / groupTotalDemandCrit.get(group));
 		}
 		for (String group : combinedGroups) {
-			CSLCombinedGroup.put(group, CSLCombinedGroup.get(group) / groupSizesCombined.get(group));
-			fillRateCombinedGroup.put(group, fillRateCombinedGroup.get(group) / groupSizesCombined.get(group));
+			CSLCombinedGroup.put(group, CSLCombinedGroup.get(group) / groupTotalDemandCombined.get(group));
+			fillRateCombinedGroup.put(group, fillRateCombinedGroup.get(group) / groupTotalDemandCombined.get(group));
 		}
 		
 		// check if all materials are accounted for in combined class
@@ -523,7 +545,7 @@ public class Simulator {
 		// Combined group - results
 		bw = new BufferedWriter(new FileWriter(prefix + "_combined_class.csv"));
 //		String s = "Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs\n";
-		bw.write("Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs,Counts");
+		bw.write("Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs,Weights,Counts");
 		bw.newLine();
 		
 		for (String group : combinedGroups) {
@@ -540,7 +562,8 @@ public class Simulator {
 			bw.write(perf.getCombinedGroupMarginalCosts(group) + ",");
 			bw.write((perf.getCombinedGroupFixedCosts(group) + perf.getCombinedGroupHoldingCosts(group)) + ",");
 			bw.write((perf.getCombinedGroupFixedCosts(group) + perf.getCombinedGroupHoldingCosts(group) + perf.getCombinedGroupMarginalCosts(group)) + ",");
-			bw.write(groupSizesCombined.get(group) + "");
+			bw.write(groupTotalDemandCombined.get(group) + ",");
+			bw.write(groupSizeCombined.get(group) + "");
 			bw.newLine();
 		}
 		bw.flush();
