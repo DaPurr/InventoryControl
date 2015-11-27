@@ -600,7 +600,7 @@ public class Simulator {
 			
 			// historical demand
 			// demand periods start at column 11, and last 3 columns are material classes
-			int[] demand = new int[part.length-10];
+			int[] demand = new int[part.length-13];
 			for (int i = 10; i < part.length-3; i++) {
 				demand[i-10] = Integer.parseInt(part[i]);
 			}
