@@ -47,10 +47,14 @@ public class PoissonPolicyS implements PolicyCreator {
 	
 	private double mean(int[] demand) {
 		double sum = 0.0;
+		int count = 0;
 		for (int i = 0; i < demand.length; i++) {
-			sum += demand[i];
+			if (demand[i] >= 0) {
+				sum += demand[i];
+				count++;
+			}
 		}
-		return sum/demand.length;
+		return sum/count;
 	}
 
 }

@@ -47,6 +47,7 @@ public class Simulator {
 	
 	// system state - auxiliary variable for determining holding and backorder costs
 	private Map<Material, Double> system_state;
+	private Set<Material> currentStockouts = new HashSet<>();
 	
 	// service measures
 	// fill rate
@@ -62,10 +63,15 @@ public class Simulator {
 	private Map<String, Double> CSLCritGroup;
 	private Map<String, Double> CSLCombinedGroup;
 	
-	Map<String, Integer> groupSizesDemand = new TreeMap<>();
-	Map<String, Integer> groupSizesPrice = new TreeMap<>();
-	Map<String, Integer> groupSizesCrit = new TreeMap<>();
-	Map<String, Integer> groupSizesCombined = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandDemand = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandPrice = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandCrit = new TreeMap<>();
+	Map<String, Integer> groupTotalDemandCombined = new TreeMap<>();
+	
+	Map<String, Integer> groupSizeDemand = new TreeMap<>();
+	Map<String, Integer> groupSizePrice = new TreeMap<>();
+	Map<String, Integer> groupSizeCrit = new TreeMap<>();
+	Map<String, Integer> groupSizeCombined = new TreeMap<>();
 	
 	/**
 	 * Creates a Simulator class based of the data in file_name.
@@ -155,15 +161,15 @@ public class Simulator {
 			Event next_event = scheduler.nextEvent();
 			
 			// TODO: ONLY FOR DEBUGGING PURPOSES
-//			Material m = next_event.associatedMaterial();
-//			int deniedDemand = perf.deniedDemand.get(m);
-//			int totalDemand = perf.totalDemand.get(m);
-//			int nrStockouts = perf.countStockouts.get(m);
-//			int nrCycles = perf.countCycles.get(m);
-//			double FR = perf.fillRate(m);
-//			double CSL = perf.CSL(m);
-//			int IL = m.getInventoryLevel();
-//			int IP = m.getInventoryPosition();
+			Material m = next_event.associatedMaterial();
+			int deniedDemand = perf.deniedDemand.get(m);
+			int totalDemand = perf.totalDemand.get(m);
+			int nrStockouts = perf.countStockouts.get(m);
+			int nrCycles = perf.countCycles.get(m);
+			double FR = perf.fillRate(m);
+			double CSL = perf.CSL(m);
+			int IL = m.getInventoryLevel();
+			int IP = m.getInventoryPosition();
 			
 			// handle a consumption event
 			if (next_event instanceof ConsumptionEvent) {
@@ -178,17 +184,17 @@ public class Simulator {
 			}
 			
 			// TODO: DEBUGGING PURPOSES ONLY
-//			deniedDemand = perf.deniedDemand.get(m);
-//			totalDemand = perf.totalDemand.get(m);
-//			nrStockouts = perf.countStockouts.get(m);
-//			nrCycles = perf.countCycles.get(m);
-//			FR = perf.fillRate(m);
-//			CSL = perf.CSL(m);
-//			IL = m.getInventoryLevel();
-//			IP = m.getInventoryPosition();
+			deniedDemand = perf.deniedDemand.get(m);
+			totalDemand = perf.totalDemand.get(m);
+			nrStockouts = perf.countStockouts.get(m);
+			nrCycles = perf.countCycles.get(m);
+			FR = perf.fillRate(m);
+			CSL = perf.CSL(m);
+			IL = m.getInventoryLevel();
+			IP = m.getInventoryPosition();
 			
 			// update holding costs
-			Material m = next_event.associatedMaterial();
+//			Material m = next_event.associatedMaterial();
 			double prev_time_m = system_state.get(m);
 			double hold_costs = holding_costs*Math.max(0, m.getInventoryLevel())*
 					(scheduler.time() - prev_time_m)*m.getPrice();
@@ -373,10 +379,11 @@ public class Simulator {
 		
 		// CSL
 //		if (consumption > m.getInventoryPosition() && !stockout.contains(m)) {
-		if (consumption >= m.getInventoryPosition()) {
+		if (consumption >= m.getInventoryLevel() && m.getInventoryLevel() > 0 && !currentStockouts.contains(m)) {
 			// we just stocked out, so process it
 //			stockouts.put(m, stockouts.get(m) + 1);
 			perf.stockout(m);
+			currentStockouts.add(m);
 //			stockout.add(m);
 		}
 		
@@ -385,11 +392,12 @@ public class Simulator {
 		
 		// if stock falls below minimum allowed stock, we schedule reorder event
 		if (m.doReorder()) {
-			int lead_time = detLeadTime(m.getLeadTime());
+			int lead_time = (int)Math.ceil(m.getLeadTime());
 			int quantity = m.reorder();
 			scheduler.addReorderEvent(m, quantity, scheduler.time() + lead_time);
 			// new cycle started
 			perf.startCycle(m);
+			currentStockouts.remove(m);
 			
 			// update inventory position
 			m.replenishInventoryPosition(quantity);
@@ -403,72 +411,98 @@ public class Simulator {
 		}
 	}
 	
-	private int detLeadTime(int lead_time) {
-		return (int)Math.ceil((double)lead_time/(double)30);
-	}
+//	private int detLeadTime(int lead_time) {
+//		return (int)Math.ceil((double)lead_time/(double)30);
+//	}
 	
 	private void calculateServiceMeasures() {		
 		// init variables
 		for (String group : demandGroups) {
-			groupSizesDemand.put(group, 0);
+			groupTotalDemandDemand.put(group, 0);
 			fillRateDemandGroup.put(group, 0.0);
 			CSLDemandGroup.put(group, 0.0);
+			groupSizeDemand.put(group, 0);
 		}
 		for (String group : priceGroups) {
-			groupSizesPrice.put(group, 0);
+			groupTotalDemandPrice.put(group, 0);
 			fillRatePriceGroup.put(group, 0.0);
 			CSLPriceGroup.put(group, 0.0);
+			groupSizePrice.put(group, 0);
 		}
 		for (String group : critGroups) {
-			groupSizesCrit.put(group, 0);
+			groupTotalDemandCrit.put(group, 0);
 			fillRateCritGroup.put(group, 0.0);
 			CSLCritGroup.put(group, 0.0);
+			groupSizeCrit.put(group, 0);
 		}
 		for (String group : combinedGroups) {
-			groupSizesCombined.put(group, 0);
+			groupTotalDemandCombined.put(group, 0);
 			fillRateCombinedGroup.put(group, 0.0);
 			CSLCombinedGroup.put(group, 0.0);
+			groupSizeCombined.put(group, 0);
 		}
 		
-		// determine sum of all service levels
+		// group counts
 		for (Material m : materials) {
 			String demandGroup = m.getDemandClass();
 			String priceGroup = m.getPriceClass();
 			String critGroup = m.criticality();
 			String combinedGroup = m.getCombinedClass();
 			
-			groupSizesDemand.put(demandGroup, groupSizesDemand.get(demandGroup) + 1);
-			CSLDemandGroup.put(demandGroup, CSLDemandGroup.get(demandGroup) + perf.CSL(m));
-			fillRateDemandGroup.put(demandGroup, fillRateDemandGroup.get(demandGroup) + perf.fillRate(m));
+			groupSizeDemand.put(demandGroup, groupSizeDemand.get(demandGroup) + 1);
+			groupSizePrice.put(priceGroup, groupSizePrice.get(priceGroup) + 1);
+			groupSizeCrit.put(critGroup, groupSizeCrit.get(critGroup) + 1);
+			groupSizeCombined.put(combinedGroup, groupSizeCombined.get(combinedGroup) + 1);
+		}
+		
+		// determine total group weight
+		for (Material m : materials) {
+			String demandGroup = m.getDemandClass();
+			String priceGroup = m.getPriceClass();
+			String critGroup = m.criticality();
+			String combinedGroup = m.getCombinedClass();
 			
-			groupSizesPrice.put(priceGroup, groupSizesPrice.get(priceGroup) + 1);
-			CSLPriceGroup.put(priceGroup, CSLPriceGroup.get(priceGroup) + perf.CSL(m));
-			fillRatePriceGroup.put(priceGroup, fillRatePriceGroup.get(priceGroup) + perf.fillRate(m));
+			groupTotalDemandDemand.put(demandGroup, groupTotalDemandDemand.get(demandGroup) + m.totalPositiveDemand());
+			groupTotalDemandPrice.put(priceGroup, groupTotalDemandPrice.get(priceGroup) + m.totalPositiveDemand());
+			groupTotalDemandCrit.put(critGroup, groupTotalDemandCrit.get(critGroup) + m.totalPositiveDemand());
+			groupTotalDemandCombined.put(combinedGroup, groupTotalDemandCombined.get(combinedGroup) + m.totalPositiveDemand());
+		}
+		
+		// determine weighted sum of all service levels
+		for (Material m : materials) {
+			String demandGroup = m.getDemandClass();
+			String priceGroup = m.getPriceClass();
+			String critGroup = m.criticality();
+			String combinedGroup = m.getCombinedClass();
 			
-			groupSizesCrit.put(critGroup, groupSizesCrit.get(critGroup) + 1);
-			CSLCritGroup.put(critGroup, CSLCritGroup.get(critGroup) + perf.CSL(m));
-			fillRateCritGroup.put(critGroup, fillRateCritGroup.get(critGroup) + perf.fillRate(m));
+			CSLDemandGroup.put(demandGroup, CSLDemandGroup.get(demandGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRateDemandGroup.put(demandGroup, fillRateDemandGroup.get(demandGroup) + perf.fillRate(m)*m.totalPositiveDemand());
 			
-			groupSizesCombined.put(combinedGroup, groupSizesCombined.get(combinedGroup) + 1);
-			CSLCombinedGroup.put(combinedGroup, CSLCombinedGroup.get(combinedGroup) + perf.CSL(m));
-			fillRateCombinedGroup.put(combinedGroup, fillRateCombinedGroup.get(combinedGroup) + perf.fillRate(m));
+			CSLPriceGroup.put(priceGroup, CSLPriceGroup.get(priceGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRatePriceGroup.put(priceGroup, fillRatePriceGroup.get(priceGroup) + perf.fillRate(m)*m.totalPositiveDemand());
+			
+			CSLCritGroup.put(critGroup, CSLCritGroup.get(critGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRateCritGroup.put(critGroup, fillRateCritGroup.get(critGroup) + perf.fillRate(m)*m.totalPositiveDemand());
+			
+			CSLCombinedGroup.put(combinedGroup, CSLCombinedGroup.get(combinedGroup) + perf.CSL(m)*m.totalPositiveDemand());
+			fillRateCombinedGroup.put(combinedGroup, fillRateCombinedGroup.get(combinedGroup) + perf.fillRate(m)*m.totalPositiveDemand());
 		}
 		// divide by group size to determine average service levels per group
 		for (String group : demandGroups) {
-			CSLDemandGroup.put(group, CSLDemandGroup.get(group) / groupSizesDemand.get(group));
-			fillRateDemandGroup.put(group, fillRateDemandGroup.get(group) / groupSizesDemand.get(group));
+			CSLDemandGroup.put(group, CSLDemandGroup.get(group) / groupTotalDemandDemand.get(group));
+			fillRateDemandGroup.put(group, fillRateDemandGroup.get(group) / groupTotalDemandDemand.get(group));
 		}
 		for (String group : priceGroups) {
-			CSLPriceGroup.put(group, CSLPriceGroup.get(group) / groupSizesPrice.get(group));
-			fillRatePriceGroup.put(group, fillRatePriceGroup.get(group) / groupSizesPrice.get(group));
+			CSLPriceGroup.put(group, CSLPriceGroup.get(group) / groupTotalDemandPrice.get(group));
+			fillRatePriceGroup.put(group, fillRatePriceGroup.get(group) / groupTotalDemandPrice.get(group));
 		}
 		for (String group : critGroups) {
-			CSLCritGroup.put(group, CSLCritGroup.get(group) / groupSizesCrit.get(group));
-			fillRateCritGroup.put(group, fillRateCritGroup.get(group) / groupSizesCrit.get(group));
+			CSLCritGroup.put(group, CSLCritGroup.get(group) / groupTotalDemandCrit.get(group));
+			fillRateCritGroup.put(group, fillRateCritGroup.get(group) / groupTotalDemandCrit.get(group));
 		}
 		for (String group : combinedGroups) {
-			CSLCombinedGroup.put(group, CSLCombinedGroup.get(group) / groupSizesCombined.get(group));
-			fillRateCombinedGroup.put(group, fillRateCombinedGroup.get(group) / groupSizesCombined.get(group));
+			CSLCombinedGroup.put(group, CSLCombinedGroup.get(group) / groupTotalDemandCombined.get(group));
+			fillRateCombinedGroup.put(group, fillRateCombinedGroup.get(group) / groupTotalDemandCombined.get(group));
 		}
 		
 		// check if all materials are accounted for in combined class
@@ -511,7 +545,7 @@ public class Simulator {
 		// Combined group - results
 		bw = new BufferedWriter(new FileWriter(prefix + "_combined_class.csv"));
 //		String s = "Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs\n";
-		bw.write("Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs,Counts");
+		bw.write("Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs,Weights,Counts");
 		bw.newLine();
 		
 		for (String group : combinedGroups) {
@@ -528,7 +562,8 @@ public class Simulator {
 			bw.write(perf.getCombinedGroupMarginalCosts(group) + ",");
 			bw.write((perf.getCombinedGroupFixedCosts(group) + perf.getCombinedGroupHoldingCosts(group)) + ",");
 			bw.write((perf.getCombinedGroupFixedCosts(group) + perf.getCombinedGroupHoldingCosts(group) + perf.getCombinedGroupMarginalCosts(group)) + ",");
-			bw.write(groupSizesCombined.get(group) + "");
+			bw.write(groupTotalDemandCombined.get(group) + ",");
+			bw.write(groupSizeCombined.get(group) + "");
 			bw.newLine();
 		}
 		bw.flush();
@@ -546,12 +581,13 @@ public class Simulator {
 		BufferedReader br = new BufferedReader(new FileReader(file_name));
 		String line = br.readLine();
 		boolean first = true;
+		int monthSize = 30;
 		while (line != null) {
 			String[] part = line.split(",");
 			
 			String demandClass = part[67];			
 			String id = part[0];
-			int lead_time = Integer.parseInt(part[1]);
+			double lead_time = Double.parseDouble(part[1])/monthSize;
 			int min_stock = Integer.parseInt(part[2]);
 			int max_stock = Integer.parseInt(part[3]);
 //			int current_stock = Integer.parseInt(part[4]);
@@ -564,7 +600,7 @@ public class Simulator {
 			
 			// historical demand
 			// demand periods start at column 11, and last 3 columns are material classes
-			int[] demand = new int[part.length-10];
+			int[] demand = new int[part.length-13];
 			for (int i = 10; i < part.length-3; i++) {
 				demand[i-10] = Integer.parseInt(part[i]);
 			}

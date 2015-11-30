@@ -1,1 +1,5 @@
 *.csv
+*.txt
+*.classpath
+*.class
+*.project
