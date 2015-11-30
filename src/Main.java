@@ -6,7 +6,7 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("EOQ_policy.csv");
+		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
 		
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -14,27 +14,41 @@ public class Main {
 		Map<String, Double> currentFRCombined = simCurrent.getRealizedFRCombined();
 		Set<Material> currentMaterials = simCurrent.getMaterials();
 		
+		// simulate using Porras
+		PorrasPolicyS porraspcS = new PorrasPolicyS();
+		Set<Material> porrasMaterials = porraspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+		Simulator simPorras = new Simulator(porrasMaterials);
+		System.out.println(simPorras.simulate());
+		// harmonize Porras
+		Simulator harmonizedPorrasSim = harmonizeService(porraspcS, porrasMaterials, currentCSLCombined, currentFRCombined);
+		System.out.println(harmonizedPorrasSim.simulate());
+		
 		// simulate using Normal policies
-//		NormalPolicyS normpcS = new NormalPolicyS();
-//		Set<Material> normalMaterials = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-//		Simulator simNormal = new Simulator(normalMaterials);
-//		System.out.println(simNormal.simulate());
+		NormalPolicyS normpcS = new NormalPolicyS();
+		Set<Material> normalMaterials = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+		Simulator simNormal = new Simulator(normalMaterials);
+		System.out.println(simNormal.simulate());
+		// harmonize normal
+		Simulator harmonizedNormalSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
+		System.out.println(harmonizedNormalSim.simulate());
 		
 		// only do Poisson for some
-//		PoissonPolicyS poisspcS = new PoissonPolicyS();
-//		Set<Material> poissonMaterials = poisspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-//		Simulator simPoisson= new Simulator(poissonMaterials);
-//		System.out.println(simPoisson.simulate());
-		
-//		Simulator harmonizedNormalSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
-//		System.out.println(harmonizedNormalSim.simulate());
+		PoissonPolicyS poisspcS = new PoissonPolicyS();
+		Set<Material> poissonMaterials = poisspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+		Simulator simPoisson= new Simulator(poissonMaterials);
+		System.out.println(simPoisson.simulate());
+		// harmonize Poisson
+		Simulator harmonizedPoissonSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
+		System.out.println(harmonizedNormalSim.simulate());
 		
 		// export service measures
 		try {
 			simCurrent.exportServiceMeasures("current");
 //			simNormal.exportServiceMeasures("normal");
 //			simPoisson.exportServiceMeasures("poisson");
-//			harmonizedNormalSim.exportServiceMeasures("harm_normal");
+			harmonizedNormalSim.exportServiceMeasures("harm_normal");
+			harmonizedPorrasSim.exportServiceMeasures("harm_porras");
+			harmonizedPoissonSim.exportServiceMeasures("harm_poisson");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -51,11 +65,11 @@ public class Main {
 		
 		// stopping criteria
 		// step size criterion
-		double epsilon = 1e-4;
+		double epsilon = 1e-6;
 		// max iterations
 		int n_max = 300;
 		// neighborhood criterion
-		double neighborhood = 0.02;
+		double neighborhood = 0.01;
 		
 		// implement a binary search type method
 		Map<String, Boolean> stopping_criteria = new HashMap<>();

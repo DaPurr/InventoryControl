@@ -12,7 +12,7 @@ public class Material {
 	double price;
 	int current_stock;
 	int stock;
-	int lead_time;
+	double lead_time;
 	int crit_H;
 	int crit_M;
 	int crit_L;
@@ -36,7 +36,7 @@ public class Material {
 	 * @param crit_L		Number of components in critical class L that need the material.
 	 * @param demand		Historical demand.
 	 */
-	public Material(String id, double price, int min_stock, int max_stock, int lead_time, 
+	public Material(String id, double price, int min_stock, int max_stock, double lead_time, 
 			int crit_H, int crit_M, int crit_L, int[] demand, String demandClass, String priceClass) {
 		this.id = id;
 		this.price = price;
@@ -51,7 +51,7 @@ public class Material {
 		policy = new PolicySS(min_stock-1, max_stock);
 	}
 	
-	public Material(String id, double price, ReorderPolicy policy, int lead_time, int crit_H, 
+	public Material(String id, double price, ReorderPolicy policy, double lead_time, int crit_H, 
 			int crit_M, int crit_L, int[] demand, String demandClass, String priceClass) {
 		this.id = id;
 		this.price = price;
@@ -142,7 +142,7 @@ public class Material {
 		return policy.maxStock();
 	}
 
-	public int getLeadTime() {
+	public double getLeadTime() {
 		return lead_time;
 	}
 	

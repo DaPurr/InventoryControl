@@ -587,7 +587,7 @@ public class Simulator {
 			
 			String demandClass = part[67];			
 			String id = part[0];
-			int lead_time = Integer.parseInt(part[1])/monthSize;
+			double lead_time = Double.parseDouble(part[1])/monthSize;
 			int min_stock = Integer.parseInt(part[2]);
 			int max_stock = Integer.parseInt(part[3]);
 //			int current_stock = Integer.parseInt(part[4]);
