@@ -10,7 +10,6 @@ public class Material {
 	// class variables describing the material
 	String id;
 	double price;
-	int current_stock;
 	int stock;
 	double lead_time;
 	int crit_H;

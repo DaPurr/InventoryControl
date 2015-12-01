@@ -574,6 +574,39 @@ public class Simulator {
 		bw.write(summary());
 		bw.flush();
 		bw.close();
+		
+		bw = new BufferedWriter(new FileWriter(prefix + "_training.csv"));
+//		bw.write("Price,Demand,Criticality,CSL,Fill rate,Fixed costs,Holding costs,Marginal costs,Total costs (no marginal),Total costs,Weights,Counts");
+//		bw.newLine();
+		
+		for (Material m : materials) {
+			bw.write(m.getId() + ",");
+			bw.write(Math.round(m.getLeadTime()) + ",");
+			bw.write((m.getReorderPoint()+1) + ",");
+			bw.write(m.getMaxStock() + ",");
+			bw.write(0 + ",");
+			bw.write(m.getPrice() + ",");
+			bw.write(m.getCritH() + ",");
+			bw.write(m.getCritM() + ",");
+			bw.write(m.getCritL() + ",");
+
+			// demand
+			for (int i = 0; i < m.getDemand().length; i++) {
+				bw.write(m.getDemand()[i] + ",");
+			}
+			
+			bw.write(m.getPriceClass() + ",");
+			bw.write(m.getDemandClass() + ",");
+			bw.write(m.criticality());
+		}
+		bw.flush();
+		bw.close();
+		
+		// write summary
+		bw = new BufferedWriter(new FileWriter(prefix + "_summary.txt"));
+		bw.write(summary());
+		bw.flush();
+		bw.close();
 	}
 	
 	public Set<Material> importMaterials(String file_name) throws IOException {
