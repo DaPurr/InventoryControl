@@ -379,7 +379,7 @@ public class Simulator {
 		
 		// CSL
 //		if (consumption > m.getInventoryPosition() && !stockout.contains(m)) {
-		if (consumption >= m.getInventoryLevel() && m.getInventoryLevel() > 0 && !currentStockouts.contains(m)) {
+		if (consumption > m.getInventoryLevel() && m.getInventoryLevel() > 0 && !currentStockouts.contains(m)) {
 			// we just stocked out, so process it
 //			stockouts.put(m, stockouts.get(m) + 1);
 			perf.stockout(m);
@@ -582,13 +582,14 @@ public class Simulator {
 		for (Material m : materials) {
 			bw.write(m.getId() + ",");
 			bw.write(Math.round(m.getLeadTime()) + ",");
-			bw.write((m.getReorderPoint()+1) + ",");
+			bw.write(m.getReorderPoint() + ",");
 			bw.write(m.getMaxStock() + ",");
 			bw.write(0 + ",");
 			bw.write(m.getPrice() + ",");
 			bw.write(m.getCritH() + ",");
 			bw.write(m.getCritM() + ",");
 			bw.write(m.getCritL() + ",");
+			bw.write(0 + ",");
 
 			// demand
 			for (int i = 0; i < m.getDemand().length; i++) {
@@ -598,6 +599,7 @@ public class Simulator {
 			bw.write(m.getPriceClass() + ",");
 			bw.write(m.getDemandClass() + ",");
 			bw.write(m.criticality());
+			bw.newLine();
 		}
 		bw.flush();
 		bw.close();
@@ -618,7 +620,34 @@ public class Simulator {
 		while (line != null) {
 			String[] part = line.split(",");
 			
-			String demandClass = part[67];			
+			// ex-post
+//			String demandClass = part[67];			
+//			String id = part[0];
+//			double lead_time = Double.parseDouble(part[1])/monthSize;
+//			int min_stock = Integer.parseInt(part[2]);
+//			int max_stock = Integer.parseInt(part[3]);
+////			int current_stock = Integer.parseInt(part[4]);
+//			double price = Double.parseDouble(part[5]);
+//			int crit_H = Integer.parseInt(part[6]);
+//			int crit_M = Integer.parseInt(part[7]);
+//			int crit_L = Integer.parseInt(part[8]);
+//			String priceClass = part[66];
+			
+			// training
+//			String demandClass = part[44];			
+//			String id = part[0];
+//			double lead_time = Double.parseDouble(part[1])/monthSize;
+//			int min_stock = Integer.parseInt(part[2]);
+//			int max_stock = Integer.parseInt(part[3]);
+////			int current_stock = Integer.parseInt(part[4]);
+//			double price = Double.parseDouble(part[5]);
+//			int crit_H = Integer.parseInt(part[6]);
+//			int crit_M = Integer.parseInt(part[7]);
+//			int crit_L = Integer.parseInt(part[8]);
+//			String priceClass = part[43];
+			
+			// test
+			String demandClass = part[36];			
 			String id = part[0];
 			double lead_time = Double.parseDouble(part[1])/monthSize;
 			int min_stock = Integer.parseInt(part[2]);
@@ -628,15 +657,20 @@ public class Simulator {
 			int crit_H = Integer.parseInt(part[6]);
 			int crit_M = Integer.parseInt(part[7]);
 			int crit_L = Integer.parseInt(part[8]);
-			String priceClass = part[66];
+			String priceClass = part[35];
 			
-			
-			// historical demand
-			// demand periods start at column 11, and last 3 columns are material classes
+			// training
 			int[] demand = new int[part.length-13];
 			for (int i = 10; i < part.length-3; i++) {
 				demand[i-10] = Integer.parseInt(part[i]);
 			}
+			
+			// historical demand
+			// demand periods start at column 11, and last 3 columns are material classes
+//			int[] demand = new int[part.length-13];
+//			for (int i = 10; i < part.length-3; i++) {
+//				demand[i-10] = Integer.parseInt(part[i]);
+//			}
 			
 			if (first) {
 				first = false;

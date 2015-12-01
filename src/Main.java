@@ -6,7 +6,7 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
+		Simulator simCurrent = new Simulator("R_EOQ_test.csv");
 		
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -15,40 +15,40 @@ public class Main {
 		Set<Material> currentMaterials = simCurrent.getMaterials();
 		
 		// simulate using Porras
-		PorrasPolicyS porraspcS = new PorrasPolicyS();
-		Set<Material> porrasMaterials = porraspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simPorras = new Simulator(porrasMaterials);
-		System.out.println(simPorras.simulate());
-		// harmonize Porras
-		Simulator harmonizedPorrasSim = harmonizeService(porraspcS, porrasMaterials, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedPorrasSim.simulate());
+//		PorrasPolicyS porraspcS = new PorrasPolicyS();
+//		Set<Material> porrasMaterials = porraspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simPorras = new Simulator(porrasMaterials);
+//		System.out.println(simPorras.simulate());
+//		// harmonize Porras
+//		Simulator harmonizedPorrasSim = harmonizeService(porraspcS, porrasMaterials, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedPorrasSim.simulate());
 		
 		// simulate using Normal policies
-		NormalPolicyS normpcS = new NormalPolicyS();
-		Set<Material> normalMaterials = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simNormal = new Simulator(normalMaterials);
-		System.out.println(simNormal.simulate());
-		// harmonize normal
-		Simulator harmonizedNormalSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedNormalSim.simulate());
+//		NormalPolicyS normpcS = new NormalPolicyS();
+//		Set<Material> normalMaterials = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simNormal = new Simulator(normalMaterials);
+//		System.out.println(simNormal.simulate());
+//		// harmonize normal
+//		Simulator harmonizedNormalSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedNormalSim.simulate());
 		
 		// only do Poisson for some
-		PoissonPolicyS poisspcS = new PoissonPolicyS();
-		Set<Material> poissonMaterials = poisspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simPoisson= new Simulator(poissonMaterials);
-		System.out.println(simPoisson.simulate());
-		// harmonize Poisson
-		Simulator harmonizedPoissonSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedNormalSim.simulate());
+//		PoissonPolicyS poisspcS = new PoissonPolicyS();
+//		Set<Material> poissonMaterials = poisspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simPoisson= new Simulator(poissonMaterials);
+//		System.out.println(simPoisson.simulate());
+//		// harmonize Poisson
+//		Simulator harmonizedPoissonSim = harmonizeService(normpcS, normalMaterials, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedNormalSim.simulate());
 		
 		// export service measures
 		try {
-			simCurrent.exportServiceMeasures("current");
+			simCurrent.exportServiceMeasures("R_EOQ_test");
 //			simNormal.exportServiceMeasures("normal");
 //			simPoisson.exportServiceMeasures("poisson");
-			harmonizedNormalSim.exportServiceMeasures("harm_normal");
-			harmonizedPorrasSim.exportServiceMeasures("harm_porras");
-			harmonizedPoissonSim.exportServiceMeasures("harm_poisson");
+//			harmonizedNormalSim.exportServiceMeasures("harm_normal");
+//			harmonizedPorrasSim.exportServiceMeasures("harm_porras");
+//			harmonizedPoissonSim.exportServiceMeasures("harm_poisson");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
