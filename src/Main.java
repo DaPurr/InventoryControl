@@ -6,7 +6,7 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("harm_normalRQ_test.csv");
+		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
 		
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -18,31 +18,31 @@ public class Main {
 		 * Create (R,Q) policies
 		 */
 		// simulate using Porras
-//		PorrasPolicyRQ porraspcRQ = new PorrasPolicyRQ();
-//		Set<Material> porrasMaterialsRQ = porraspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-//		Simulator simPorrasRQ = new Simulator(porrasMaterialsRQ);
-//		System.out.println(simPorrasRQ.simulate());
-//		// harmonize Porras
-//		Simulator harmonizedPorrasSimRQ = harmonizeService(porraspcRQ, porrasMaterialsRQ, currentCSLCombined, currentFRCombined);
-//		System.out.println(harmonizedPorrasSimRQ.simulate());
+		PorrasPolicyRQ porraspcRQ = new PorrasPolicyRQ();
+		Set<Material> porrasMaterialsRQ = porraspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+		Simulator simPorrasRQ = new Simulator(porrasMaterialsRQ);
+		System.out.println(simPorrasRQ.simulate());
+		// harmonize Porras
+		Simulator harmonizedPorrasSimRQ = harmonizeService(porraspcRQ, porrasMaterialsRQ, currentCSLCombined, currentFRCombined);
+		System.out.println(harmonizedPorrasSimRQ.simulate());
 
 		// simulate using Normal policies
-//		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
-//		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-//		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
-//		System.out.println(simNormalRQ.simulate());
-//		// harmonize Normal
-//		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
-//		System.out.println(harmonizedNormalSimRQ.simulate());
+		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
+		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
+		System.out.println(simNormalRQ.simulate());
+		// harmonize Normal
+		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
+		System.out.println(harmonizedNormalSimRQ.simulate());
 		
 		// simulate using Poisson policies
-//		PoissonPolicyRQ poisspcRQ = new PoissonPolicyRQ();
-//		Set<Material> poissonMaterialsRQ = poisspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-//		Simulator simPoissonRQ = new Simulator(poissonMaterialsRQ);
-//		System.out.println(simPoissonRQ.simulate());
-//		// harmonize Poisson
-//		Simulator harmonizedPoissonSimRQ = harmonizeService(poisspcRQ, poissonMaterialsRQ, currentCSLCombined, currentFRCombined);
-//		System.out.println(harmonizedPoissonSimRQ.simulate());
+		PoissonPolicyRQ poisspcRQ = new PoissonPolicyRQ();
+		Set<Material> poissonMaterialsRQ = poisspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+		Simulator simPoissonRQ = new Simulator(poissonMaterialsRQ);
+		System.out.println(simPoissonRQ.simulate());
+		// harmonize Poisson
+		Simulator harmonizedPoissonSimRQ = harmonizeService(poisspcRQ, poissonMaterialsRQ, currentCSLCombined, currentFRCombined);
+		System.out.println(harmonizedPoissonSimRQ.simulate());
 
 		/*
 		 * Create (S-1,S) policies
@@ -76,15 +76,15 @@ public class Main {
 		
 		// export service measures
 		try {
-			simCurrent.exportServiceMeasures("normalRQ_test");
+			simCurrent.exportServiceMeasures("current");
 //			simNormalS.exportServiceMeasures("normal");
 //			simPoissonS.exportServiceMeasures("poisson");
 //			harmonizedNormalSimS.exportServiceMeasures("harm_normal");
 //			harmonizedPorrasSimS.exportServiceMeasures("harm_porras");
 //			harmonizedPoissonSimS.exportServiceMeasures("harm_poisson");
-//			harmonizedPorrasSimRQ.exportServiceMeasures("harm_porrasRQ_training");
-//			harmonizedNormalSimRQ.exportServiceMeasures("harm_normalRQ_training");
-//			harmonizedPoissonSimRQ.exportServiceMeasures("harm_poissonRQ_training");
+			harmonizedPorrasSimRQ.exportServiceMeasures("harm_porrasRQ");
+			harmonizedNormalSimRQ.exportServiceMeasures("harm_normalRQ");
+			harmonizedPoissonSimRQ.exportServiceMeasures("harm_poissonRQ");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
