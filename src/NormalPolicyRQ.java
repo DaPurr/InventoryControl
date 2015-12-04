@@ -29,6 +29,8 @@ public class NormalPolicyRQ implements PolicyCreator {
 	public ReorderPolicy createPolicyCSL(Material m, double target) {
 		int[] demand = m.getDemand();
 		double leadTime = m.getLeadTime();
+		if (target == 1.0)
+			target -= 1e-4;
 		
 		double mean = mean(demand);
 		double std = std(demand);
@@ -39,9 +41,11 @@ public class NormalPolicyRQ implements PolicyCreator {
 		// determine reorder point
 		NormalDistribution normdist = new NormalDistribution();
 		int reorder_point = (int)Math.ceil(mu_prime + sigma_prime*normdist.inverseCumulativeProbability(target));
+		if (reorder_point < 1)
+			reorder_point = 1;
 		
 		// determine EOQ
-		double h = 0.25/12;
+		double h = (0.25/12)*m.getPrice();
 		int A = 36;
 		int quantity = EOQ(mean, A, h);
 		

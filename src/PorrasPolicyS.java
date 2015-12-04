@@ -34,6 +34,8 @@ public class PorrasPolicyS implements PolicyCreator {
 		
 		int[] demand = m.getDemand();
 		double leadTime = m.getLeadTime();
+		if (target == 1.0)
+			target -= 1e-4;
 		
 		int roundLeadTime = (int) Math.ceil(leadTime);
 		List<Integer> leadTimeDemands = new ArrayList<>();

@@ -29,6 +29,8 @@ public class NormalPolicyS implements PolicyCreator {
 	public ReorderPolicy createPolicyCSL(Material m, double target) {
 		int[] demand = m.getDemand();
 		double leadTime = m.getLeadTime();
+		if (target == 1.0)
+			target -= 1e-4;
 		
 		double mean = mean(demand);
 		double std = std(demand);
