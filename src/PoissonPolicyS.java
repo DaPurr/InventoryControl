@@ -1,6 +1,7 @@
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
@@ -26,7 +27,7 @@ public class PoissonPolicyS implements PolicyCreator {
 	
 	@Override
 	public Set<Material> createPolicyCSL(Set<Material> materials, Map<String, Double> mapTargetCSL) {
-		Set<Material> poissonMaterials = new HashSet<>();
+		Set<Material> poissonMaterials = new TreeSet<>();
 		PolicyCreator pc = new PoissonPolicyS();
 		
 		for (Material m : materials) {

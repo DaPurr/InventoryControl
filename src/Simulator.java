@@ -612,7 +612,7 @@ public class Simulator {
 	}
 	
 	public Set<Material> importMaterials(String file_name) throws IOException {
-		Set<Material> imported = new HashSet<>();
+		Set<Material> imported = new TreeSet<>();
 		BufferedReader br = new BufferedReader(new FileReader(file_name));
 		String line = br.readLine();
 		boolean first = true;

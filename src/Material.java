@@ -5,7 +5,7 @@
  * Class representation of a spare part. Per part we register the associated ID, price, etc..
  *
  */
-public class Material {
+public class Material implements Comparable<Material> {
 
 	// class variables describing the material
 	String id;
@@ -210,6 +210,11 @@ public class Material {
 			sum += demand[i];
 		}
 		return sum;
+	}
+
+	@Override
+	public int compareTo(Material that) {
+		return Integer.parseInt(id) - Integer.parseInt(that.getId());
 	}
 	
 }

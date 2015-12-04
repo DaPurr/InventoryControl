@@ -6,7 +6,7 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("R_EOQ_test.csv");
+		Simulator simCurrent = new Simulator("harm_porras_test.csv");
 		
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -43,7 +43,7 @@ public class Main {
 		
 		// export service measures
 		try {
-			simCurrent.exportServiceMeasures("R_EOQ_test");
+			simCurrent.exportServiceMeasures("harm_porras_test");
 //			simNormal.exportServiceMeasures("normal");
 //			simPoisson.exportServiceMeasures("poisson");
 //			harmonizedNormalSim.exportServiceMeasures("harm_normal");
@@ -65,11 +65,11 @@ public class Main {
 		
 		// stopping criteria
 		// step size criterion
-		double epsilon = 1e-6;
+		double epsilon = 1e-5;
 		// max iterations
 		int n_max = 300;
 		// neighborhood criterion
-		double neighborhood = 0.01;
+		double neighborhood = 0.02;
 		
 		// implement a binary search type method
 		Map<String, Boolean> stopping_criteria = new HashMap<>();

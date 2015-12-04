@@ -1,6 +1,7 @@
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
@@ -12,7 +13,7 @@ public class NormalPolicyS implements PolicyCreator {
 	
 	@Override
 	public Set<Material> createPolicyCSL(Set<Material> materials, Map<String, Double> mapTargetCSL) {
-		Set<Material> normalMaterials = new HashSet<>();
+		Set<Material> normalMaterials = new TreeSet<>();
 		PolicyCreator pc = new NormalPolicyS();
 		
 		for (Material m : materials) {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class PorrasPolicyS implements PolicyCreator {
 	
@@ -13,7 +14,7 @@ public class PorrasPolicyS implements PolicyCreator {
 
 	@Override
 	public Set<Material> createPolicyCSL(Set<Material> materials, Map<String, Double> mapTargetCSL) {
-		Set<Material> porrasMaterials = new HashSet<>();
+		Set<Material> porrasMaterials = new TreeSet<>();
 		PolicyCreator pc = new PorrasPolicyS();
 
 		for (Material m : materials) {
