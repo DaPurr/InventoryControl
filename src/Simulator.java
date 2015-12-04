@@ -619,35 +619,9 @@ public class Simulator {
 		int monthSize = 30;
 		while (line != null) {
 			String[] part = line.split(",");
+			int n = part.length;
 			
-			// ex-post
-//			String demandClass = part[67];			
-//			String id = part[0];
-//			double lead_time = Double.parseDouble(part[1])/monthSize;
-//			int min_stock = Integer.parseInt(part[2]);
-//			int max_stock = Integer.parseInt(part[3]);
-////			int current_stock = Integer.parseInt(part[4]);
-//			double price = Double.parseDouble(part[5]);
-//			int crit_H = Integer.parseInt(part[6]);
-//			int crit_M = Integer.parseInt(part[7]);
-//			int crit_L = Integer.parseInt(part[8]);
-//			String priceClass = part[66];
-			
-			// training
-//			String demandClass = part[44];			
-//			String id = part[0];
-//			double lead_time = Double.parseDouble(part[1])/monthSize;
-//			int min_stock = Integer.parseInt(part[2]);
-//			int max_stock = Integer.parseInt(part[3]);
-////			int current_stock = Integer.parseInt(part[4]);
-//			double price = Double.parseDouble(part[5]);
-//			int crit_H = Integer.parseInt(part[6]);
-//			int crit_M = Integer.parseInt(part[7]);
-//			int crit_L = Integer.parseInt(part[8]);
-//			String priceClass = part[43];
-			
-			// test
-			String demandClass = part[36];			
+			String demandClass = part[n-2];			
 			String id = part[0];
 			double lead_time = Double.parseDouble(part[1])/monthSize;
 			int min_stock = Integer.parseInt(part[2]);
@@ -657,7 +631,33 @@ public class Simulator {
 			int crit_H = Integer.parseInt(part[6]);
 			int crit_M = Integer.parseInt(part[7]);
 			int crit_L = Integer.parseInt(part[8]);
-			String priceClass = part[35];
+			String priceClass = part[n-3];
+			
+			// training
+//			String demandClass = part[n-2];			
+//			String id = part[0];
+//			double lead_time = Double.parseDouble(part[1])/monthSize;
+//			int min_stock = Integer.parseInt(part[2]);
+//			int max_stock = Integer.parseInt(part[3]);
+////			int current_stock = Integer.parseInt(part[4]);
+//			double price = Double.parseDouble(part[5]);
+//			int crit_H = Integer.parseInt(part[6]);
+//			int crit_M = Integer.parseInt(part[7]);
+//			int crit_L = Integer.parseInt(part[8]);
+//			String priceClass = part[n-3];
+			
+			// test
+//			String demandClass = part[n-2];			
+//			String id = part[0];
+//			double lead_time = Double.parseDouble(part[1])/monthSize;
+//			int min_stock = Integer.parseInt(part[2]);
+//			int max_stock = Integer.parseInt(part[3]);
+////			int current_stock = Integer.parseInt(part[4]);
+//			double price = Double.parseDouble(part[5]);
+//			int crit_H = Integer.parseInt(part[6]);
+//			int crit_M = Integer.parseInt(part[7]);
+//			int crit_L = Integer.parseInt(part[8]);
+//			String priceClass = part[n-3];
 			
 			// training
 			int[] demand = new int[part.length-13];

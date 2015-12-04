@@ -6,7 +6,7 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("harm_porras_test.csv");
+		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
 		
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
