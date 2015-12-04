@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +18,7 @@ public class PorrasPolicyS implements PolicyCreator {
 
 		for (Material m : materials) {
 			// estimate policy
-			ReorderPolicy policy = pc.createPolicyCSL(m.getDemand(), m.getLeadTime(), mapTargetCSL.get(m.getCombinedClass()));
+			ReorderPolicy policy = pc.createPolicyCSL(m, mapTargetCSL.get(m.getCombinedClass()));
 			Material material = new Material(m, policy);
 			porrasMaterials.add(material);
 		}
@@ -27,12 +26,14 @@ public class PorrasPolicyS implements PolicyCreator {
 	}
 
 
-//	@Override
-	public ReorderPolicy createPolicyCSL(int[] demand, double leadTime,
-			double target) {
+	@Override
+	public ReorderPolicy createPolicyCSL(Material m, double target) {
 		// create frequency table and pmf
 		TreeMap<Integer, Integer> frequencyTable = new TreeMap<>();
 		TreeMap<Integer, Double> probabilityTable = new TreeMap<>();
+		
+		int[] demand = m.getDemand();
+		double leadTime = m.getLeadTime();
 		
 		int roundLeadTime = (int) Math.ceil(leadTime);
 		List<Integer> leadTimeDemands = new ArrayList<>();
@@ -43,7 +44,6 @@ public class PorrasPolicyS implements PolicyCreator {
 			}
 			leadTimeDemands.add(sum); 
 		}
-//		ArrayList<Integer> uniqueList = new ArrayList<Integer>(); 
 
 		for(int i=0; i < leadTimeDemands.size(); i++) {
 			if (frequencyTable.get(leadTimeDemands.get(i)) != null){
@@ -51,7 +51,6 @@ public class PorrasPolicyS implements PolicyCreator {
 				frequencyTable.put(leadTimeDemands.get(i), elementCount+1);
 
 			} else {
-//				uniqueList.add(leadTimeDemands.get(i));
 				frequencyTable.put(leadTimeDemands.get(i),1);
 			}
 		}
@@ -76,10 +75,8 @@ public class PorrasPolicyS implements PolicyCreator {
 		return policy;
 	}
 
-
 	@Override
-	public ReorderPolicy createPolicyFR(int[] demand, double leadTime,
-			double target) {
+	public ReorderPolicy createPolicyFR(Material m,	double target) {
 		// TODO Auto-generated method stub
 		return null;
 	}

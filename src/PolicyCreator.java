@@ -17,7 +17,7 @@ public interface PolicyCreator {
 	 * @param target Target fill rate for the material.
 	 * @return
 	 */
-	public ReorderPolicy createPolicyCSL(int[] demand, double leadTime, double target);
+	public ReorderPolicy createPolicyCSL(Material m, double target);
 	
 	public Set<Material> createPolicyCSL(Set<Material> materials, Map<String, Double> mapTargetCSL);
 	
@@ -29,6 +29,6 @@ public interface PolicyCreator {
 	 * @param target Target CSL for the material.
 	 * @return Order policy for the material.
 	 */
-	public ReorderPolicy createPolicyFR(int[] demand, double leadTime, double target);
+	public ReorderPolicy createPolicyFR(Material m, double target);
 	
 }

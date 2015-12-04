@@ -1,4 +1,3 @@
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,7 +17,7 @@ public class NormalPolicyS implements PolicyCreator {
 		
 		for (Material m : materials) {
 			// estimate policy
-			ReorderPolicy policy = pc.createPolicyCSL(m.getDemand(), m.getLeadTime(), mapTargetCSL.get(m.getCombinedClass()));
+			ReorderPolicy policy = pc.createPolicyCSL(m, mapTargetCSL.get(m.getCombinedClass()));
 			Material material = new Material(m, policy);
 			normalMaterials.add(material);
 		}
@@ -27,7 +26,10 @@ public class NormalPolicyS implements PolicyCreator {
 	}
 	
 	@Override
-	public ReorderPolicy createPolicyCSL(int[] demand, double leadTime, double target) {
+	public ReorderPolicy createPolicyCSL(Material m, double target) {
+		int[] demand = m.getDemand();
+		double leadTime = m.getLeadTime();
+		
 		double mean = mean(demand);
 		double std = std(demand);
 		
@@ -47,7 +49,7 @@ public class NormalPolicyS implements PolicyCreator {
 	}
 
 	@Override
-	public ReorderPolicy createPolicyFR(int[] demand, double leadTime, double target) {
+	public ReorderPolicy createPolicyFR(Material m, double target) {
 		// TODO Auto-generated method stub
 		return null;
 	}

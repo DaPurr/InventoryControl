@@ -2,7 +2,7 @@
  * 
  * @author Nemanja Milovanovic
  * 
- * Represents the reordering policy for a certain material.
+ * Represents the (s,S) policy.
  *
  */
 public class PolicySS extends ReorderPolicy {
