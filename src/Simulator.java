@@ -616,7 +616,7 @@ public class Simulator {
 		BufferedReader br = new BufferedReader(new FileReader(file_name));
 		String line = br.readLine();
 		boolean first = true;
-		int monthSize = 30;
+		double monthSize = 30.5;
 		while (line != null) {
 			String[] part = line.split(",");
 			int n = part.length;
