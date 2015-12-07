@@ -6,7 +6,7 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
+		Simulator simCurrent = new Simulator("EOQ_policy_Training_Set.csv");
 
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -18,71 +18,71 @@ public class Main {
 		 * Create (R,Q) policies
 		 */
 		// simulate using Porras
-		PorrasPolicyRQ porraspcRQ = new PorrasPolicyRQ();
-		Set<Material> porrasMaterialsRQ = porraspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simPorrasRQ = new Simulator(porrasMaterialsRQ);
-		System.out.println(simPorrasRQ.simulate());
-		// harmonize Porras
-		Simulator harmonizedPorrasSimRQ = harmonizeService(porraspcRQ, porrasMaterialsRQ, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedPorrasSimRQ.simulate());
-
-		// simulate using Normal policies
-		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
-		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
-		System.out.println(simNormalRQ.simulate());
-		// harmonize Normal
-		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedNormalSimRQ.simulate());
-
-		// simulate using Poisson policies
-		PoissonPolicyRQ poisspcRQ = new PoissonPolicyRQ();
-		Set<Material> poissonMaterialsRQ = poisspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simPoissonRQ = new Simulator(poissonMaterialsRQ);
-		System.out.println(simPoissonRQ.simulate());
-		// harmonize Poisson
-		Simulator harmonizedPoissonSimRQ = harmonizeService(poisspcRQ, poissonMaterialsRQ, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedPoissonSimRQ.simulate());
-
-		/*
-		 * Create (S-1,S) policies
-		 */
-		// simulate using Porras
-		PorrasPolicyS porraspcS = new PorrasPolicyS();
-		Set<Material> porrasMaterialsS = porraspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simPorrasS = new Simulator(porrasMaterialsS);
-		System.out.println(simPorrasS.simulate());
-		// harmonize Porras
-		Simulator harmonizedPorrasSimS = harmonizeService(porraspcS, porrasMaterialsS, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedPorrasSimS.simulate());
-
-		// simulate using Normal policies
-		NormalPolicyS normpcS = new NormalPolicyS();
-		Set<Material> normalMaterialsS = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simNormalS = new Simulator(normalMaterialsS);
-		System.out.println(simNormalS.simulate());
-		// harmonize normal
-		Simulator harmonizedNormalSimS = harmonizeService(normpcS, normalMaterialsS, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedNormalSimS.simulate());
-
-		// only do Poisson for some
-		PoissonPolicyS poisspcS = new PoissonPolicyS();
-		Set<Material> poissonMaterialsS = poisspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simPoissonS = new Simulator(poissonMaterialsS);
-		System.out.println(simPoissonS.simulate());
-		// harmonize Poisson
-		Simulator harmonizedPoissonSimS = harmonizeService(poisspcS, poissonMaterialsS, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedPoissonSimS.simulate());
+//		PorrasPolicyRQ porraspcRQ = new PorrasPolicyRQ();
+//		Set<Material> porrasMaterialsRQ = porraspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simPorrasRQ = new Simulator(porrasMaterialsRQ);
+//		System.out.println(simPorrasRQ.simulate());
+//		// harmonize Porras
+//		Simulator harmonizedPorrasSimRQ = harmonizeService(porraspcRQ, porrasMaterialsRQ, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedPorrasSimRQ.simulate());
+//
+//		// simulate using Normal policies
+//		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
+//		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
+//		System.out.println(simNormalRQ.simulate());
+//		// harmonize Normal
+//		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedNormalSimRQ.simulate());
+//
+//		// simulate using Poisson policies
+//		PoissonPolicyRQ poisspcRQ = new PoissonPolicyRQ();
+//		Set<Material> poissonMaterialsRQ = poisspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simPoissonRQ = new Simulator(poissonMaterialsRQ);
+//		System.out.println(simPoissonRQ.simulate());
+//		// harmonize Poisson
+//		Simulator harmonizedPoissonSimRQ = harmonizeService(poisspcRQ, poissonMaterialsRQ, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedPoissonSimRQ.simulate());
+//
+//		/*
+//		 * Create (S-1,S) policies
+//		 */
+//		// simulate using Porras
+//		PorrasPolicyS porraspcS = new PorrasPolicyS();
+//		Set<Material> porrasMaterialsS = porraspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simPorrasS = new Simulator(porrasMaterialsS);
+//		System.out.println(simPorrasS.simulate());
+//		// harmonize Porras
+//		Simulator harmonizedPorrasSimS = harmonizeService(porraspcS, porrasMaterialsS, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedPorrasSimS.simulate());
+//
+//		// simulate using Normal policies
+//		NormalPolicyS normpcS = new NormalPolicyS();
+//		Set<Material> normalMaterialsS = normpcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simNormalS = new Simulator(normalMaterialsS);
+//		System.out.println(simNormalS.simulate());
+//		// harmonize normal
+//		Simulator harmonizedNormalSimS = harmonizeService(normpcS, normalMaterialsS, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedNormalSimS.simulate());
+//
+//		// only do Poisson for some
+//		PoissonPolicyS poisspcS = new PoissonPolicyS();
+//		Set<Material> poissonMaterialsS = poisspcS.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simPoissonS = new Simulator(poissonMaterialsS);
+//		System.out.println(simPoissonS.simulate());
+//		// harmonize Poisson
+//		Simulator harmonizedPoissonSimS = harmonizeService(poisspcS, poissonMaterialsS, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedPoissonSimS.simulate());
 
 		// export service measures
 		try {
-			simCurrent.exportServiceMeasures("current");
-			harmonizedNormalSimS.exportServiceMeasures("harm_normal");
-			harmonizedPorrasSimS.exportServiceMeasures("harm_porras");
-			harmonizedPoissonSimS.exportServiceMeasures("harm_poisson");
-			harmonizedPorrasSimRQ.exportServiceMeasures("harm_porrasRQ");
-			harmonizedNormalSimRQ.exportServiceMeasures("harm_normalRQ");
-			harmonizedPoissonSimRQ.exportServiceMeasures("harm_poissonRQ");
+			simCurrent.exportServiceMeasures("R_EOQ_test");
+//			harmonizedNormalSimS.exportServiceMeasures("harm_normal_training");
+//			harmonizedPorrasSimS.exportServiceMeasures("harm_porras_training");
+//			harmonizedPoissonSimS.exportServiceMeasures("harm_poisson_training");
+//			harmonizedPorrasSimRQ.exportServiceMeasures("harm_porrasRQ_training");
+//			harmonizedNormalSimRQ.exportServiceMeasures("harm_normalRQ_training");
+//			harmonizedPoissonSimRQ.exportServiceMeasures("harm_poissonRQ_training");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -216,6 +216,11 @@ public class Main {
 		}
 
 		return sim;
+	}
+	
+	public void exportEfficiencyCurves(PolicyCreator pc, Set<Material> materials, 
+			Map<String, Double> targetCSL, Map<String, Double> targetFR) throws IOException {
+		double step_size = 0.5;
 	}
 
 }
