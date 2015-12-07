@@ -118,7 +118,7 @@ public class PorrasPolicyRQ implements PolicyCreator {
 		if (quantity <= 1)
 			return 1;
 		else if (C_low < C_upp)
-			return (int)Math.ceil(quantity);
+			return (int)Math.floor(quantity);
 		else
 			return (int)Math.ceil(quantity);
 	}
