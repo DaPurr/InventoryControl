@@ -1,12 +1,17 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("EOQ_policy_Training_Set.csv");
+		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
 
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -25,17 +30,17 @@ public class Main {
 //		// harmonize Porras
 //		Simulator harmonizedPorrasSimRQ = harmonizeService(porraspcRQ, porrasMaterialsRQ, currentCSLCombined, currentFRCombined);
 //		System.out.println(harmonizedPorrasSimRQ.simulate());
-//
-//		// simulate using Normal policies
-//		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
-//		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-//		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
-//		System.out.println(simNormalRQ.simulate());
-//		// harmonize Normal
-//		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
-//		System.out.println(harmonizedNormalSimRQ.simulate());
-//
-//		// simulate using Poisson policies
+
+		// simulate using Normal policies
+		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
+		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
+		System.out.println(simNormalRQ.simulate());
+		// harmonize Normal
+		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
+		System.out.println(harmonizedNormalSimRQ.simulate());
+
+		// simulate using Poisson policies
 //		PoissonPolicyRQ poisspcRQ = new PoissonPolicyRQ();
 //		Set<Material> poissonMaterialsRQ = poisspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
 //		Simulator simPoissonRQ = new Simulator(poissonMaterialsRQ);
@@ -83,6 +88,9 @@ public class Main {
 //			harmonizedPorrasSimRQ.exportServiceMeasures("harm_porrasRQ_training");
 //			harmonizedNormalSimRQ.exportServiceMeasures("harm_normalRQ_training");
 //			harmonizedPoissonSimRQ.exportServiceMeasures("harm_poissonRQ_training");
+			
+			exportEfficiencyCurves("harm_normalRQ", normalpcRQ, 
+					normalMaterialsRQ, currentCSLCombined.keySet());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -218,9 +226,62 @@ public class Main {
 		return sim;
 	}
 	
-	public void exportEfficiencyCurves(PolicyCreator pc, Set<Material> materials, 
-			Map<String, Double> targetCSL, Map<String, Double> targetFR) throws IOException {
-		double step_size = 0.5;
+	public static void exportEfficiencyCurves(String file_name, PolicyCreator pc, 
+			Set<Material> materials, Set<String> groups) throws IOException {
+		double step_size = 0.005;
+		double start = 0.0;
+		double stop = 0.995;
+		double current = start;
+		
+		Map<String, List<Double>> mapTargetCSL = new TreeMap<>();
+		Map<String, List<Double>> mapRealizedCSL = new TreeMap<>();
+		Map<String, List<Double>> mapTotalCost = new TreeMap<>();
+		for (String group : groups) {			
+			mapTargetCSL.put(group, new LinkedList<Double>());
+			mapRealizedCSL.put(group, new LinkedList<Double>());
+			mapTotalCost.put(group, new LinkedList<Double>());
+		}
+		
+		while (current <= stop) {
+			// create target CSL's
+			current += step_size;
+			Map<String, Double> targetCSL = new TreeMap<>();
+			for (String group : groups) {
+				targetCSL.put(group, current);
+			}
+			
+			Set<Material> newMaterials = pc.createPolicyCSL(materials, targetCSL);
+			Simulator sim = new Simulator(newMaterials);
+			sim.simulate();
+			Map<String, Double> realizedCSLGroups = sim.getRealizedCSLCombined();
+			Map<String, Double> totalCostsGroup = sim.getTotalCostsCombined();
+			for (String group : groups) {
+				double realizedCSL = realizedCSLGroups.get(group);
+				List<Double> list = mapRealizedCSL.get(group);
+				list.add(realizedCSL);
+				double totalCosts = totalCostsGroup.get(group);
+				List<Double> list2 = mapTotalCost.get(group);
+				list2.add(totalCosts);
+				List<Double> list3 = mapTargetCSL.get(group);
+				list3.add(current);
+			}
+		}
+		
+		// print data
+		for (String group : groups) {
+			BufferedWriter bw = new BufferedWriter(new FileWriter("./graphs/"+file_name+"_"+group+".csv"));
+			bw.write("Target CSL,Realized CSL,Total costs");
+			bw.newLine();
+			List<Double> listTarget = mapTargetCSL.get(group);
+			List<Double> listRealized = mapRealizedCSL.get(group);
+			List<Double> listTC = mapTotalCost.get(group);
+			for (int i = 0; i < listTarget.size(); i++) {
+				bw.write(listTarget.get(i) + "," + listRealized.get(i) + "," + listTC.get(i));
+				bw.newLine();
+			}
+			bw.flush();
+			bw.close();
+		}
 	}
 
 }

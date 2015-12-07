@@ -725,4 +725,13 @@ public class Simulator {
 		return costs;
 	}
 	
+	public Map<String, Double> getTotalCostsCombined() {
+		Map<String, Double> map = new TreeMap<>();
+		for (String group : combinedGroups) {
+			map.put(group, perf.getCombinedGroupFixedCosts(group) + 
+					perf.getCombinedGroupHoldingCosts(group));
+		}
+		return map;
+	}
+	
 }
