@@ -11,7 +11,7 @@ import java.util.TreeMap;
 public class Main {
 
 	public static void main(String[] args) {
-		Simulator simCurrent = new Simulator("DataCorrectedWithClassFreqLD.csv");
+		Simulator simCurrent = new Simulator("R_EOQ_test.csv");
 
 		// simulate using current policies
 		System.out.println(simCurrent.simulate());
@@ -30,17 +30,17 @@ public class Main {
 //		// harmonize Porras
 //		Simulator harmonizedPorrasSimRQ = harmonizeService(porraspcRQ, porrasMaterialsRQ, currentCSLCombined, currentFRCombined);
 //		System.out.println(harmonizedPorrasSimRQ.simulate());
-
-		// simulate using Normal policies
-		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
-		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
-		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
-		System.out.println(simNormalRQ.simulate());
-		// harmonize Normal
-		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
-		System.out.println(harmonizedNormalSimRQ.simulate());
-
-		// simulate using Poisson policies
+//
+//		// simulate using Normal policies
+//		NormalPolicyRQ normalpcRQ = new NormalPolicyRQ();
+//		Set<Material> normalMaterialsRQ = normalpcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
+//		Simulator simNormalRQ = new Simulator(normalMaterialsRQ);
+//		System.out.println(simNormalRQ.simulate());
+//		// harmonize Normal
+//		Simulator harmonizedNormalSimRQ = harmonizeService(normalpcRQ, normalMaterialsRQ, currentCSLCombined, currentFRCombined);
+//		System.out.println(harmonizedNormalSimRQ.simulate());
+//
+//		// simulate using Poisson policies
 //		PoissonPolicyRQ poisspcRQ = new PoissonPolicyRQ();
 //		Set<Material> poissonMaterialsRQ = poisspcRQ.createPolicyCSL(currentMaterials, currentCSLCombined);
 //		Simulator simPoissonRQ = new Simulator(poissonMaterialsRQ);
@@ -89,8 +89,18 @@ public class Main {
 //			harmonizedNormalSimRQ.exportServiceMeasures("harm_normalRQ_training");
 //			harmonizedPoissonSimRQ.exportServiceMeasures("harm_poissonRQ_training");
 			
-			exportEfficiencyCurves("harm_normalRQ", normalpcRQ, 
-					normalMaterialsRQ, currentCSLCombined.keySet());
+//			exportEfficiencyCurves("harm_normalRQ", normalpcRQ, 
+//					normalMaterialsRQ, currentCSLCombined.keySet());
+//			exportEfficiencyCurves("harm_poissonRQ", poisspcRQ, 
+//					poissonMaterialsRQ, currentCSLCombined.keySet());
+//			exportEfficiencyCurves("harm_porrasRQ", porraspcRQ, 
+//					porrasMaterialsRQ, currentCSLCombined.keySet());
+//			exportEfficiencyCurves("harm_normal", normpcS, 
+//					normalMaterialsS, currentCSLCombined.keySet());
+//			exportEfficiencyCurves("harm_poisson", poisspcS, 
+//					poissonMaterialsS, currentCSLCombined.keySet());
+//			exportEfficiencyCurves("harm_porras", porraspcS, 
+//					porrasMaterialsS, currentCSLCombined.keySet());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
